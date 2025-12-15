@@ -1,0 +1,32 @@
+```mermaid
+C4Container
+    title Diagrama de Contenedores - Baba Chatbot
+
+    Person(customer, "Cliente", "Usuario interesado en comprar un vehículo")
+    
+    System_Ext(twilio, "Twilio", "Proveedor de servicios de comunicación")
+    System_Ext(llm, "LLM Local", "Ollama/OpenAI compatible")
+    
+    System_Boundary(babaChatbot, "Baba Chatbot") {
+        Container(api, "API", ".NET 8.0 Web API", "Expone webhooks y endpoints REST")
+        Container(worker, "Worker", ".NET Background Service", "Jobs de mantenimiento e ingesta RAG")
+        ContainerDb(db, "Base de Datos", "PostgreSQL/SQL Server", "Almacena conversaciones, perfiles de clientes")
+        ContainerDb(cache, "Caché", "Redis/Memory", "Sesiones y datos temporales")
+        ContainerDb(vectorStore, "Vector Store", "FAISS/Chroma", "Índices vectoriales para RAG")
+        ContainerDb(catalogDb, "Catálogo", "JSON/DB", "Inventario de vehículos")
+    }
+    
+    Rel(customer, twilio, "Mensajes WhatsApp", "HTTPS")
+    Rel(twilio, api, "Webhook", "HTTPS/JSON")
+    Rel(api, db, "Lee/Escribe", "ADO.NET/EF Core")
+    Rel(api, cache, "Lee/Escribe", "Redis Protocol")
+    Rel(api, llm, "Consultas", "HTTP/API")
+    Rel(api, vectorStore, "Búsqueda semántica", "Python/HTTP")
+    Rel(api, catalogDb, "Consulta vehículos", "SQL/File")
+    Rel(worker, vectorStore, "Actualiza índices", "Python/HTTP")
+    Rel(worker, catalogDb, "Sincroniza datos", "SQL/File")
+    
+    UpdateRelStyle(twilio, api, $textColor="green", $lineColor="green")
+    UpdateRelStyle(api, llm, $textColor="orange", $lineColor="orange")
+```
+

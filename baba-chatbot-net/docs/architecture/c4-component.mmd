@@ -1,0 +1,46 @@
+```mermaid
+C4Component
+    title Diagrama de Componentes - Baba Chatbot API
+
+    Container_Boundary(api, "API - Baba.Chatbot.Api") {
+        Component(webhookCtrl, "Webhook Controller", "ASP.NET Controller", "Recibe mensajes de Twilio")
+        Component(healthCtrl, "Health Controller", "ASP.NET Controller", "Health checks")
+        Component(middleware, "Middleware", "ASP.NET Middleware", "Logging, excepción handling")
+    }
+    
+    Container_Boundary(app, "Application Layer") {
+        Component(orchestrator, "Conversation Orchestrator", "C# Service", "Orquesta el flujo de conversación")
+        Component(intentRecognizer, "Intent Recognizer", "C# Service", "Detecta intenciones del usuario")
+        Component(guardrails, "Guardrails", "C# Service", "Valida y filtra respuestas")
+        Component(useCases, "Use Cases", "C# Services", "Casos de uso: recomendación, financiamiento")
+    }
+    
+    Container_Boundary(domain, "Domain Layer") {
+        Component(entities, "Entities", "C# Classes", "Conversation, CustomerProfile, Vehicle")
+        Component(valueObjects, "Value Objects", "C# Classes", "Money, VehicleQuery, FinancingTerms")
+        Component(domainServices, "Domain Services", "C# Services", "Lógica de negocio pura")
+    }
+    
+    Container_Boundary(infra, "Infrastructure & Integrations") {
+        Component(twilioClient, "Twilio Client", "C# Client", "Envía mensajes")
+        Component(llmClient, "LLM Client", "C# Client", "Consultas a modelo local")
+        Component(ragRetriever, "RAG Retriever", "C# Service", "Búsqueda en vector store")
+        Component(catalogRepo, "Catalog Repository", "C# Repository", "Acceso a catálogo")
+        Component(dbRepo, "Database Repositories", "EF Core", "Persistencia")
+    }
+    
+    Rel(webhookCtrl, orchestrator, "Delega procesamiento")
+    Rel(orchestrator, intentRecognizer, "Detecta intención")
+    Rel(orchestrator, guardrails, "Valida respuesta")
+    Rel(orchestrator, useCases, "Ejecuta caso de uso")
+    Rel(useCases, domainServices, "Usa lógica de dominio")
+    Rel(useCases, llmClient, "Genera respuesta")
+    Rel(useCases, ragRetriever, "Busca contexto")
+    Rel(useCases, catalogRepo, "Consulta vehículos")
+    Rel(orchestrator, dbRepo, "Persiste conversación")
+    Rel(twilioClient, webhookCtrl, "Responde", "callback")
+    
+    UpdateRelStyle(webhookCtrl, orchestrator, $textColor="blue", $lineColor="blue")
+    UpdateRelStyle(useCases, llmClient, $textColor="orange", $lineColor="orange")
+```
+

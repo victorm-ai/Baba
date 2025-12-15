@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <!-- No external dependencies in Domain layer (Clean Architecture) -->
+  </ItemGroup>
+
+</Project>
+

@@ -1,0 +1,24 @@
+```mermaid
+C4Context
+    title Diagrama de Contexto - Baba Chatbot
+
+    Person(customer, "Cliente", "Usuario interesado en comprar un vehículo")
+    
+    System(babaChatbot, "Baba Chatbot", "Sistema de chatbot inteligente para asistencia de ventas mediante WhatsApp")
+    
+    System_Ext(whatsapp, "WhatsApp", "Plataforma de mensajería")
+    System_Ext(twilio, "Twilio", "Proveedor de servicios de comunicación")
+    System_Ext(llm, "LLM Local", "Modelo de lenguaje (Ollama/OpenAI compatible)")
+    System_Ext(catalogDb, "Catálogo de Vehículos", "Base de datos de inventario")
+    
+    Rel(customer, whatsapp, "Envía mensajes", "WhatsApp")
+    Rel(whatsapp, twilio, "Webhook", "HTTPS")
+    Rel(twilio, babaChatbot, "Webhook entrante", "HTTPS")
+    Rel(babaChatbot, twilio, "Respuestas", "API REST")
+    Rel(babaChatbot, llm, "Consultas LLM", "HTTP/API")
+    Rel(babaChatbot, catalogDb, "Consulta inventario", "SQL/REST")
+    
+    UpdateRelStyle(customer, whatsapp, $textColor="blue", $lineColor="blue")
+    UpdateRelStyle(twilio, babaChatbot, $textColor="green", $lineColor="green")
+```
+

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.0" />
+    <PackageReference Include="OpenAI" Version="2.8.0" />
+    <PackageReference Include="Twilio" Version="7.0.0" />
+    <PackageReference Include="System.Net.Http.Json" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Baba.Chatbot.Application\Baba.Chatbot.Application.csproj" />
+  </ItemGroup>
+
+</Project>
+
