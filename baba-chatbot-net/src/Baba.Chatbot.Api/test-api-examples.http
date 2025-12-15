@@ -1,0 +1,93 @@
+### Baba Chatbot API - Test Examples
+### Puedes usar estos ejemplos en VS Code con la extensión REST Client
+### o copiar los comandos curl para probarlos en la terminal
+
+@baseUrl = http://localhost:52586
+@baseUrlHttps = https://localhost:52585
+
+###############################################
+# Health Checks
+###############################################
+
+### 1. Health Check - Básico
+GET {{baseUrl}}/health
+Accept: application/json
+
+### 2. Health Check - HTTPS
+GET {{baseUrlHttps}}/health
+Accept: application/json
+
+### 3. Readiness Check - Verificar dependencias
+GET {{baseUrl}}/health/ready
+Accept: application/json
+
+###############################################
+# Twilio Webhooks
+###############################################
+
+### 4. Simular mensaje entrante de Twilio (WhatsApp)
+POST {{baseUrl}}/v1/webhook/twilio/incoming
+Content-Type: application/x-www-form-urlencoded
+
+From=whatsapp:+521234567890&To=whatsapp:+525555555555&Body=Hola, quiero información sobre autos&MessageSid=SM1234567890abcdef&NumMedia=0
+
+### 5. Simular mensaje con pregunta sobre financiamiento
+POST {{baseUrl}}/v1/webhook/twilio/incoming
+Content-Type: application/x-www-form-urlencoded
+
+From=whatsapp:+521234567890&To=whatsapp:+525555555555&Body=¿Cuánto cuesta el financiamiento para un auto de $200,000?&MessageSid=SM2234567890abcdef&NumMedia=0
+
+### 6. Simular callback de estado de mensaje
+POST {{baseUrl}}/v1/webhook/twilio/status
+Content-Type: application/x-www-form-urlencoded
+
+MessageSid=SM1234567890abcdef&MessageStatus=delivered
+
+### 7. Simular mensaje fallido
+POST {{baseUrl}}/v1/webhook/twilio/status
+Content-Type: application/x-www-form-urlencoded
+
+MessageSid=SM1234567890abcdef&MessageStatus=failed
+
+###############################################
+# Comandos cURL equivalentes
+###############################################
+
+### Health Check (curl)
+# curl -X GET "http://localhost:52586/health" -H "Accept: application/json"
+
+### Readiness Check (curl)
+# curl -X GET "http://localhost:52586/health/ready" -H "Accept: application/json"
+
+### Webhook entrante (curl)
+# curl -X POST "http://localhost:52586/v1/webhook/twilio/incoming" \
+#   -H "Content-Type: application/x-www-form-urlencoded" \
+#   -d "From=whatsapp:+521234567890" \
+#   -d "To=whatsapp:+525555555555" \
+#   -d "Body=Hola, quiero información sobre autos" \
+#   -d "MessageSid=SM1234567890abcdef" \
+#   -d "NumMedia=0"
+
+### Status callback (curl)
+# curl -X POST "http://localhost:52586/v1/webhook/twilio/status" \
+#   -H "Content-Type: application/x-www-form-urlencoded" \
+#   -d "MessageSid=SM1234567890abcdef" \
+#   -d "MessageStatus=delivered"
+
+###############################################
+# PowerShell equivalentes
+###############################################
+
+### Health Check (PowerShell)
+# Invoke-RestMethod -Uri "http://localhost:52586/health" -Method Get
+
+### Webhook entrante (PowerShell)
+# $body = @{
+#     From = "whatsapp:+521234567890"
+#     To = "whatsapp:+525555555555"
+#     Body = "Hola, quiero información sobre autos"
+#     MessageSid = "SM1234567890abcdef"
+#     NumMedia = "0"
+# }
+# Invoke-RestMethod -Uri "http://localhost:52586/v1/webhook/twilio/incoming" -Method Post -Body $body -ContentType "application/x-www-form-urlencoded"
+

@@ -1,0 +1,154 @@
+openapi: 3.0.3
+info:
+  title: Baba Chatbot API
+  description: API para chatbot de asistencia de ventas de vehículos mediante WhatsApp
+  version: 1.0.0
+  contact:
+    name: Baba Chatbot Team
+    email: team@babachatbot.com
+
+servers:
+  - url: https://api.babachatbot.com/v1
+    description: Producción
+  - url: https://staging-api.babachatbot.com/v1
+    description: Staging
+  - url: http://localhost:5000/v1
+    description: Desarrollo local
+
+tags:
+  - name: Webhook
+    description: Endpoints para webhooks de Twilio
+  - name: Health
+    description: Health checks y diagnósticos
+
+paths:
+  /webhook/twilio/incoming:
+    post:
+      tags:
+        - Webhook
+      summary: Recibe mensajes entrantes de Twilio
+      description: Webhook que procesa mensajes de WhatsApp enviados por Twilio
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                MessageSid:
+                  type: string
+                  description: ID único del mensaje
+                From:
+                  type: string
+                  description: Número de teléfono del remitente (formato E.164)
+                To:
+                  type: string
+                  description: Número de teléfono del destinatario
+                Body:
+                  type: string
+                  description: Contenido del mensaje
+                NumMedia:
+                  type: integer
+                  description: Número de archivos multimedia adjuntos
+              required:
+                - MessageSid
+                - From
+                - To
+                - Body
+      responses:
+        '200':
+          description: Mensaje procesado correctamente
+          content:
+            application/xml:
+              schema:
+                type: string
+                example: |
+                  <?xml version="1.0" encoding="UTF-8"?>
+                  <Response>
+                    <Message>Gracias por tu mensaje. ¿En qué puedo ayudarte hoy?</Message>
+                  </Response>
+        '400':
+          description: Solicitud inválida
+        '401':
+          description: Firma de Twilio inválida
+        '500':
+          description: Error interno del servidor
+
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check básico
+      description: Verifica que la API esté funcionando
+      responses:
+        '200':
+          description: API funcionando correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /health/ready:
+    get:
+      tags:
+        - Health
+      summary: Readiness check
+      description: Verifica que todos los servicios dependientes estén disponibles
+      responses:
+        '200':
+          description: Sistema listo para recibir tráfico
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Ready
+                  checks:
+                    type: object
+                    properties:
+                      database:
+                        type: string
+                        example: Healthy
+                      llm:
+                        type: string
+                        example: Healthy
+                      vectorStore:
+                        type: string
+                        example: Healthy
+        '503':
+          description: Sistema no está listo
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Código de error
+        message:
+          type: string
+          description: Descripción del error
+        timestamp:
+          type: string
+          format: date-time
+
+  securitySchemes:
+    TwilioSignature:
+      type: apiKey
+      in: header
+      name: X-Twilio-Signature
+      description: Firma HMAC para validar webhooks de Twilio
+
+security:
+  - TwilioSignature: []
+
